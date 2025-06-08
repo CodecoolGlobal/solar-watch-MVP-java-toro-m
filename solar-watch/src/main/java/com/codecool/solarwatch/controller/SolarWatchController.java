@@ -1,8 +1,7 @@
 package com.codecool.solarwatch.controller;
 
-import com.codecool.solarwatch.model.SunSetRiseReport;
+import com.codecool.solarwatch.model.SunSetRiseTimes;
 import com.codecool.solarwatch.service.SunSetRiseService;
-import org.springframework.http.RequestEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -17,7 +16,7 @@ public class SolarWatchController {
     }
 
     @GetMapping("/sun")
-public SunSetRiseReport getSunriseAndSunset(@RequestParam(required = false) String location, @RequestParam(required = false) LocalDate date) {
+public SunSetRiseTimes getSunriseAndSunset(@RequestParam(required = false) String location, @RequestParam(required = false) LocalDate date) {
 if (location == null || location.equals("")) {
     location = DEFAULT_LOCATION;
 }

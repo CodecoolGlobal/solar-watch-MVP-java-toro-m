@@ -1,7 +1,7 @@
 package com.codecool.solarwatch.service;
 
 import com.codecool.solarwatch.model.Coordinates;
-import com.codecool.solarwatch.model.SunSetRiseReport;
+import com.codecool.solarwatch.model.SunSetRiseTimes;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -18,10 +18,12 @@ public class SunSetRiseService {
         this.restTemplate = restTemplate;
     }
 
-    public SunSetRiseReport getSunSetRise(String location, LocalDate date) {
+    public SunSetRiseTimes getSunSetRise(String location, LocalDate date) {
         String coordinatesFromLocationUrl = String.format("http://api.openweathermap.org/geo/1.0/direct?q=%s&appid=%s", location, API_KEY);
         Coordinates coordinates = restTemplate.getForObject(coordinatesFromLocationUrl, Coordinates.class);
 
+        String sunSetRiseUrl=String.format("https://api.sunrise-sunset.org/json?lat=%s&lng=%s&date=%s", coordinates.lat(), coordinates.lng(), date);
+SunSetRiseTimes sunTimes=restTemplate.getForObject(sunSetRiseUrl, SunSetRiseTimes.class);
 
 
     }

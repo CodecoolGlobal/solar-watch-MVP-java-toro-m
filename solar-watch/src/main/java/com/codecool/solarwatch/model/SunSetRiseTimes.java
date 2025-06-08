@@ -6,7 +6,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Locale;
 
-public record SunSetRiseReport(String sunrise, String sunset, String tzid) {
+public record SunSetRiseTimes(String sunrise, String sunset, String tzid) {
 
     private static final DateTimeFormatter TIME_FORMATTER =
             DateTimeFormatter.ofPattern("h:mm:ss a", Locale.US);
