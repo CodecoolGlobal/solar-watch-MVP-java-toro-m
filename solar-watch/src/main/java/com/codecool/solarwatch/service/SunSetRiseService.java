@@ -1,6 +1,7 @@
 package com.codecool.solarwatch.service;
 
 import com.codecool.solarwatch.model.Coordinates;
+import com.codecool.solarwatch.model.SunSetRiseReport;
 import com.codecool.solarwatch.model.SunSetRiseTimes;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -24,7 +25,6 @@ public class SunSetRiseService {
 
         String sunSetRiseUrl=String.format("https://api.sunrise-sunset.org/json?lat=%s&lng=%s&date=%s", coordinates.lat(), coordinates.lng(), date);
 SunSetRiseTimes sunTimes=restTemplate.getForObject(sunSetRiseUrl, SunSetRiseTimes.class);
-
 
     }
 }
