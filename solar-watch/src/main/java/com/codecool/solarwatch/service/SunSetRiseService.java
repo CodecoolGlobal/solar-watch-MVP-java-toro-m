@@ -40,8 +40,8 @@ public class SunSetRiseService {
         return new SunSetRiseReport(
                 location,
                 date,
-                firstCoordinate.lat(),
-                firstCoordinate.lon(),
+                sunTimes.sunRise(),
+                sunTimes.sunSet(),
                 sunTimes.tzid()
         );
     }
