@@ -20,11 +20,30 @@ public class SunSetRiseService {
     }
 
     public SunSetRiseReport getSunSetRise(String location, LocalDate date) {
-        String coordinatesFromLocationUrl = String.format("http://api.openweathermap.org/geo/1.0/direct?q=%s&appid=%s", location, API_KEY);
-        Coordinates coordinates = restTemplate.getForObject(coordinatesFromLocationUrl, Coordinates.class);
+        String coordinatesFromLocationUrl = String.format(
+                "http://api.openweathermap.org/geo/1.0/direct?q=%s&appid=%s", location, API_KEY
+        );
 
-        String sunSetRiseUrl=String.format("https://api.sunrise-sunset.org/json?lat=%s&lng=%s&date=%s", coordinates.lat(), coordinates.lng(), date);
-SunSetRiseTimes sunTimes=restTemplate.getForObject(sunSetRiseUrl, SunSetRiseTimes.class);
+        Coordinates[] coordinatesArray = restTemplate.getForObject(coordinatesFromLocationUrl, Coordinates[].class);
+        if (coordinatesArray == null || coordinatesArray.length == 0) {
+            throw new RuntimeException("Could not find coordinates for location: " + location);
+        }
+        Coordinates firstCoordinate = coordinatesArray[0];
 
+        String sunSetRiseUrl = String.format(
+                "https://api.sunrise-sunset.org/json?lat=%s&lng=%s&date=%s",
+                firstCoordinate.lat(), firstCoordinate.lng(), date
+        );
+
+        SunSetRiseTimes sunTimes = restTemplate.getForObject(sunSetRiseUrl, SunSetRiseTimes.class);
+
+        return new SunSetRiseReport(
+                location,
+                date,
+                firstCoordinate.lat(),
+                firstCoordinate.lng(),
+                sunTimes.tzid()
+        );
     }
+
 }
