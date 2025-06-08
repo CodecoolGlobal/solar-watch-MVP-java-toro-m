@@ -1,5 +1,6 @@
 package com.codecool.solarwatch.controller;
 
+import com.codecool.solarwatch.model.SunSetRiseReport;
 import com.codecool.solarwatch.service.SunSetRiseService;
 import org.springframework.http.RequestEntity;
 import org.springframework.web.bind.annotation.GetMapping;

@@ -1,5 +1,6 @@
 package com.codecool.solarwatch.service;
 
+import com.codecool.solarwatch.model.SunSetRiseReport;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
