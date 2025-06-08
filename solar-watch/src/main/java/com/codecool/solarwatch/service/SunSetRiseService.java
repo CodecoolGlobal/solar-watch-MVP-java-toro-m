@@ -19,9 +19,10 @@ public class SunSetRiseService {
     }
 
     public SunSetRiseReport getSunSetRise(String location, LocalDate date) {
-String coordinatesFromLocationUrl= String.format("http://api.openweathermap.org/geo/1.0/direct?q=%s&appid=%s", location, API_KEY);
+        String coordinatesFromLocationUrl = String.format("http://api.openweathermap.org/geo/1.0/direct?q=%s&appid=%s", location, API_KEY);
+        Coordinates coordinates = restTemplate.getForObject(coordinatesFromLocationUrl, Coordinates.class);
 
-Coordinates coordinates = restTemplate.getForObject(coordinatesFromLocationUrl, Coordinates.class);
+
 
     }
 }
