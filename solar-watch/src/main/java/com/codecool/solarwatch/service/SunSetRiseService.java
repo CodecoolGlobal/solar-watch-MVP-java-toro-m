@@ -32,7 +32,7 @@ public class SunSetRiseService {
 
         String sunSetRiseUrl = String.format(
                 "https://api.sunrise-sunset.org/json?lat=%s&lng=%s&date=%s",
-                firstCoordinate.lat(), firstCoordinate.lng(), date
+                firstCoordinate.lat(), firstCoordinate.lon(), date
         );
 
         SunSetRiseTimes sunTimes = restTemplate.getForObject(sunSetRiseUrl, SunSetRiseTimes.class);
@@ -41,7 +41,7 @@ public class SunSetRiseService {
                 location,
                 date,
                 firstCoordinate.lat(),
-                firstCoordinate.lng(),
+                firstCoordinate.lon(),
                 sunTimes.tzid()
         );
     }
