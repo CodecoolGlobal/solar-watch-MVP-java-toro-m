@@ -4,6 +4,7 @@ import com.codecool.solarwatch.model.Coordinates;
 import com.codecool.solarwatch.model.SunSetRiseReport;
 import com.codecool.solarwatch.model.SunSetRiseTimes;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDate;
@@ -20,30 +21,35 @@ public class SunSetRiseService {
     }
 
     public SunSetRiseReport getSunSetRise(String location, LocalDate date) {
-        String coordinatesFromLocationUrl = String.format(
-                "http://api.openweathermap.org/geo/1.0/direct?q=%s&appid=%s", location, API_KEY
-        );
+        try {
+            String coordinatesFromLocationUrl = String.format(
+                    "http://api.openweathermap.org/geo/1.0/direct?q=%s&appid=%s", location, API_KEY
+            );
 
-        Coordinates[] coordinatesArray = restTemplate.getForObject(coordinatesFromLocationUrl, Coordinates[].class);
-        if (coordinatesArray == null || coordinatesArray.length == 0) {
-            throw new RuntimeException("Could not find coordinates for location: " + location);
+            Coordinates[] coordinatesArray = restTemplate.getForObject(coordinatesFromLocationUrl, Coordinates[].class);
+            if (coordinatesArray == null || coordinatesArray.length == 0) {
+                throw new RuntimeException("Could not find coordinates for location: " + location);
+            }
+            Coordinates firstCoordinate = coordinatesArray[0];
+
+            String sunSetRiseUrl = String.format(
+                    "https://api.sunrise-sunset.org/json?lat=%s&lng=%s&date=%s",
+                    firstCoordinate.lat(), firstCoordinate.lon(), date
+            );
+
+            SunSetRiseTimes sunTimes = restTemplate.getForObject(sunSetRiseUrl, SunSetRiseTimes.class);
+
+            return new SunSetRiseReport(
+                    location,
+                    date,
+                    sunTimes.sunRise(),
+                    sunTimes.sunSet(),
+                    sunTimes.tzid()
+            );
+        } catch (RestClientException e) {
+            throw new RuntimeException("External API call failed: " + e.getMessage(), e);
         }
-        Coordinates firstCoordinate = coordinatesArray[0];
-
-        String sunSetRiseUrl = String.format(
-                "https://api.sunrise-sunset.org/json?lat=%s&lng=%s&date=%s",
-                firstCoordinate.lat(), firstCoordinate.lon(), date
-        );
-
-        SunSetRiseTimes sunTimes = restTemplate.getForObject(sunSetRiseUrl, SunSetRiseTimes.class);
-
-        return new SunSetRiseReport(
-                location,
-                date,
-                sunTimes.sunRise(),
-                sunTimes.sunSet(),
-                sunTimes.tzid()
-        );
     }
+
 
 }
