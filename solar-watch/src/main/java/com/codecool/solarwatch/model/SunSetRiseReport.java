@@ -15,7 +15,7 @@ public record SunSetRiseReport(String sunrise, String sunset, String tzid) {
         try {
             return LocalTime.parse(sunrise, TIME_FORMATTER);
         } catch (DateTimeParseException e) {
-            throw new InvalidSunTimeFormatException("Failed to parse sunrise time: " + sunrise, e);
+            throw new InvalidSunTimeFormatException("Failed to parse sunrise time: " + sunrise);
         }
     }
 
@@ -23,7 +23,7 @@ public record SunSetRiseReport(String sunrise, String sunset, String tzid) {
         try {
             return LocalTime.parse(sunset, TIME_FORMATTER);
         } catch (DateTimeParseException e) {
-            throw new InvalidSunTimeFormatException("Failed to parse sunset time: " + sunset, e);
+            throw new InvalidSunTimeFormatException("Failed to parse sunset time: " + sunset);
         }
     }
 }
