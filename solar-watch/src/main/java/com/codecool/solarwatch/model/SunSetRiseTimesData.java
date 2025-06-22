@@ -19,6 +19,16 @@ public class SunSetRiseTimesData {
     private String sunsetTime;
     private String timezoneId;
 
+    public SunSetRiseTimesData(City city, LocalDate date, String sunriseTime, String sunsetTime, String timezoneId) {
+        this.city = city;
+        this.date = date;
+        this.sunriseTime = sunriseTime;
+        this.sunsetTime = sunsetTime;
+        this.timezoneId = timezoneId;
+    }
+
+    public SunSetRiseTimesData() {
+    }
 
     public long getId() {
         return id;

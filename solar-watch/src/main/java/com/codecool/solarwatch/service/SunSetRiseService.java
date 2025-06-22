@@ -1,25 +1,29 @@
 package com.codecool.solarwatch.service;
 
-import com.codecool.solarwatch.model.Coordinates;
-import com.codecool.solarwatch.model.SunSetRiseReport;
-import com.codecool.solarwatch.model.SunSetRiseTimes;
+import com.codecool.solarwatch.model.*;
+import com.codecool.solarwatch.repository.CityRepository;
+import com.codecool.solarwatch.repository.SunSetRiseTimesRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 @Service
 public class SunSetRiseService {
-    // todo get this off github
     String API_KEY = System.getenv("API_KEY");
     private final RestTemplate restTemplate;
+    private final CityRepository cityRepository;
+    private final SunSetRiseTimesRepository sunSetRiseTimesRepository;
 
-    public SunSetRiseService(RestTemplate restTemplate) {
+    public SunSetRiseService(RestTemplate restTemplate, CityRepository cityRepository, SunSetRiseTimesRepository sunSetRiseTimesRepository) {
         this.restTemplate = restTemplate;
+        this.cityRepository = cityRepository;
+        this.sunSetRiseTimesRepository = sunSetRiseTimesRepository;
     }
 
-    public SunSetRiseReport getSunSetRise(String location, LocalDate date) {
+    private City getCityFromExternalApi(String location) {
         try {
             String coordinatesFromLocationUrl = String.format(
                     "http://api.openweathermap.org/geo/1.0/direct?q=%s&appid=%s", location, API_KEY
@@ -30,25 +34,59 @@ public class SunSetRiseService {
                 throw new RuntimeException("Could not find coordinates for location: " + location);
             }
             Coordinates firstCoordinate = coordinatesArray[0];
+            return new City(location, firstCoordinate.lon(), firstCoordinate.lat());
 
-            String sunSetRiseUrl = String.format(
-                    "https://api.sunrise-sunset.org/json?lat=%s&lng=%s&date=%s",
-                    firstCoordinate.lat(), firstCoordinate.lon(), date
-            );
-
-            SunSetRiseTimes sunTimes = restTemplate.getForObject(sunSetRiseUrl, SunSetRiseTimes.class);
-
-            return new SunSetRiseReport(
-                    location,
-                    date,
-                    sunTimes.sunRise(),
-                    sunTimes.sunSet(),
-                    sunTimes.tzid()
-            );
         } catch (RestClientException e) {
             throw new RuntimeException("External API call failed: " + e.getMessage(), e);
         }
     }
+
+    private City getCity(String location) {
+        Optional<City> databaseCity = cityRepository.findByName(location);
+        City city;
+        if (databaseCity.isEmpty()) {
+            city = getCityFromExternalApi(location);
+            cityRepository.save(city);
+        } else {
+            city = databaseCity.get();
+        }
+        return city;
+    }
+
+    private SunSetRiseTimesData getSunSetRiseTimesFromExternalApi(City city, LocalDate date) {
+        try {
+
+            String sunSetRiseUrl = String.format(
+                    "https://api.sunrise-sunset.org/json?lat=%s&lng=%s&date=%s",
+                    city.getLatitude(), city.getLongitude(), date
+            );
+
+            SunSetRiseTimes sunTimes = restTemplate.getForObject(sunSetRiseUrl, SunSetRiseTimes.class);
+            return new SunSetRiseTimesData(city, date, sunTimes.sunRise(), sunTimes.sunSet(), sunTimes.tzid());
+        } catch (RestClientException e) {
+            throw new RuntimeException("External API call failed: " + e.getMessage(), e);
+        }
+    }
+
+    private SunSetRiseTimesData getSunSetRiseTimes(City city, LocalDate date) {
+        SunSetRiseTimesData sunSetRiseTimesData;
+        Optional<SunSetRiseTimesData> databaseReport = sunSetRiseTimesRepository.findByCityAndDate(city, date);
+        if (databaseReport.isEmpty()) {
+            sunSetRiseTimesData = getSunSetRiseTimesFromExternalApi(city, date);
+            sunSetRiseTimesRepository.save(sunSetRiseTimesData);
+        } else {
+            sunSetRiseTimesData = databaseReport.get();
+        }
+        return sunSetRiseTimesData;
+    }
+
+    public SunSetRiseTimesData getSunSetRise(String location, LocalDate date) {
+        City city = getCity(location);
+        SunSetRiseTimesData data = getSunSetRiseTimes(city, date);
+        return data;
+
+    }
+
 
 
 }

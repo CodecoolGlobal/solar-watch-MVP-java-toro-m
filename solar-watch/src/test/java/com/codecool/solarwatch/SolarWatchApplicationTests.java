@@ -4,10 +4,9 @@ import static org.mockito.Mockito.*;
 
 import java.time.LocalDate;
 
-import com.codecool.solarwatch.model.Coordinates;
-import com.codecool.solarwatch.model.SunSetRiseReport;
-import com.codecool.solarwatch.model.SunSetRiseResults;
-import com.codecool.solarwatch.model.SunSetRiseTimes;
+import com.codecool.solarwatch.model.*;
+import com.codecool.solarwatch.repository.CityRepository;
+import com.codecool.solarwatch.repository.SunSetRiseTimesRepository;
 import com.codecool.solarwatch.service.SunSetRiseService;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -24,10 +23,17 @@ public class SolarWatchApplicationTests {
 	@Mock
 	private RestTemplate restTemplate;
 
+	@Mock
+	private CityRepository cityRepository;
+
+	@Mock
+	SunSetRiseTimesRepository sunSetRiseTimesRepository;
+
 	@BeforeEach
 	void setup() {
 		MockitoAnnotations.openMocks(this);
-		sunSetRiseService = new SunSetRiseService(restTemplate);
+		sunSetRiseService = new SunSetRiseService(restTemplate, cityRepository, sunSetRiseTimesRepository);
+
 	}
 
 	@Test
@@ -50,14 +56,14 @@ public class SolarWatchApplicationTests {
 				contains("sunrise-sunset.org/json"), eq(SunSetRiseTimes.class)))
 				.thenReturn(times);
 
-		SunSetRiseReport report = sunSetRiseService.getSunSetRise(location, date);
+		SunSetRiseTimesData report = sunSetRiseService.getSunSetRise(location, date);
 
 		assertNotNull(report);
-		assertEquals(location, report.locationName());
-		assertEquals(date, report.date());
-		assertEquals("2:47:33 AM", report.sunRise());
-		assertEquals("6:38:41 PM", report.sunSet());
-		assertEquals("UTC", report.timeZoneId());
+		assertEquals(location, report.getCity().getName());
+		assertEquals(date, report.getDate());
+		assertEquals("2:47:33 AM", report.getSunriseTime());
+		assertEquals("6:38:41 PM", report.getSunsetTime());
+		assertEquals("UTC", report.getTimezoneId());
 	}
 
 	@Test
