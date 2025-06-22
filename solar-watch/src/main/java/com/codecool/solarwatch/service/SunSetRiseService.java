@@ -12,8 +12,7 @@ import java.time.LocalDate;
 @Service
 public class SunSetRiseService {
     // todo get this off github
-    private static final String API_KEY = "3e0cd5534393786af5b3cf1eccf2f97b";
-
+    String API_KEY = System.getenv("API_KEY");
     private final RestTemplate restTemplate;
 
     public SunSetRiseService(RestTemplate restTemplate) {
