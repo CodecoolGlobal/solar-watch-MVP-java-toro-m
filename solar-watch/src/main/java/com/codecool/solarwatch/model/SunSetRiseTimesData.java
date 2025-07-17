@@ -11,7 +11,7 @@ public class SunSetRiseTimesData {
     private long id;
 
     @ManyToOne
-    @JoinColumn(name = "city_id", referencedColumnName = "id")
+    @JoinColumn(name = "city_id")
     private City city;
 
     private LocalDate date;
