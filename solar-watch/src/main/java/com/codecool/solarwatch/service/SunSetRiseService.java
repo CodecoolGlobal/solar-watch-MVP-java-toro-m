@@ -5,7 +5,7 @@ import com.codecool.solarwatch.repository.CityRepository;
 import com.codecool.solarwatch.repository.SunSetRiseTimesRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import java.time.LocalDate;
 import java.util.Optional;
@@ -13,12 +13,12 @@ import java.util.Optional;
 @Service
 public class SunSetRiseService {
     String API_KEY = System.getenv("API_KEY");
-    private final RestTemplate restTemplate;
+    private final WebClient webClient;
     private final CityRepository cityRepository;
     private final SunSetRiseTimesRepository sunSetRiseTimesRepository;
 
-    public SunSetRiseService(RestTemplate restTemplate, CityRepository cityRepository, SunSetRiseTimesRepository sunSetRiseTimesRepository) {
-        this.restTemplate = restTemplate;
+    public SunSetRiseService(WebClient webClient, CityRepository cityRepository, SunSetRiseTimesRepository sunSetRiseTimesRepository) {
+        this.webClient = webClient;
         this.cityRepository = cityRepository;
         this.sunSetRiseTimesRepository = sunSetRiseTimesRepository;
     }
@@ -29,7 +29,13 @@ public class SunSetRiseService {
                     "http://api.openweathermap.org/geo/1.0/direct?q=%s&appid=%s", location, API_KEY
             );
 
-            Coordinates[] coordinatesArray = restTemplate.getForObject(coordinatesFromLocationUrl, Coordinates[].class);
+            Coordinates[] coordinatesArray = WebClient.create()
+                    .get()
+                    .uri(coordinatesFromLocationUrl)
+                    .retrieve()
+                    .bodyToMono(Coordinates[].class)
+                    .block();
+
             if (coordinatesArray == null || coordinatesArray.length == 0) {
                 throw new RuntimeException("Could not find coordinates for location: " + location);
             }
@@ -61,7 +67,12 @@ public class SunSetRiseService {
                     city.getLatitude(), city.getLongitude(), date
             );
 
-            SunSetRiseTimes sunTimes = restTemplate.getForObject(sunSetRiseUrl, SunSetRiseTimes.class);
+            SunSetRiseTimes sunTimes = WebClient.create()
+                    .get().uri(sunSetRiseUrl)
+                    .retrieve()
+                    .bodyToMono(SunSetRiseTimes.class)
+                    .block();
+
             return new SunSetRiseTimesData(city, date, sunTimes.sunRise(), sunTimes.sunSet(), sunTimes.tzid());
         } catch (RestClientException e) {
             throw new RuntimeException("External API call failed: " + e.getMessage(), e);
@@ -86,7 +97,6 @@ public class SunSetRiseService {
         return data;
 
     }
-
 
 
 }

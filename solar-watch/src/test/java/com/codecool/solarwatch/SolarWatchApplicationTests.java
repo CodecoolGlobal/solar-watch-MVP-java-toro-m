@@ -15,10 +15,13 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
 
 public class SolarWatchApplicationTests {
 
 	private SunSetRiseService sunSetRiseService;
+
+	//Todo - re do test cases with web client - ask mentor
 
 	@Mock
 	private RestTemplate restTemplate;
@@ -32,7 +35,7 @@ public class SolarWatchApplicationTests {
 	@BeforeEach
 	void setup() {
 		MockitoAnnotations.openMocks(this);
-		sunSetRiseService = new SunSetRiseService(restTemplate, cityRepository, sunSetRiseTimesRepository);
+	//	sunSetRiseService = new SunSetRiseService(restTemplate, cityRepository, sunSetRiseTimesRepository);
 
 	}
 
