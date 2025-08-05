@@ -34,7 +34,7 @@ public class SolarWatchApplicationTests {
 
 	@BeforeEach
 	void setup() {
-		MockitoAnnotations.openMocks(this);
+		MockitoAnnotations.openMocks(this); // change to extrandwith annotatoion on the class
 	//	sunSetRiseService = new SunSetRiseService(restTemplate, cityRepository, sunSetRiseTimesRepository);
 
 	}

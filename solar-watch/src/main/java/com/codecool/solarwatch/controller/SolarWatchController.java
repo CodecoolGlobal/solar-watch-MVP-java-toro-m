@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.time.LocalDate;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/sun")
 public class SolarWatchController {
     private static final String DEFAULT_LOCATION = "Budapest";
     private SunSetRiseService sunSetRiseService;
@@ -21,7 +21,7 @@ public class SolarWatchController {
         this.sunSetRiseService = sunSetRiseService;
     }
 
-    @GetMapping("/sun")
+    @GetMapping()
     public SunSetRiseTimesData getSunriseAndSunset(@RequestParam(required = false) String location, @RequestParam(required = false) LocalDate date) {
         if (location == null || location.equals("")) {
             location = DEFAULT_LOCATION;

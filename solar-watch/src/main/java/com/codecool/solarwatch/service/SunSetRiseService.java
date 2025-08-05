@@ -3,6 +3,7 @@ package com.codecool.solarwatch.service;
 import com.codecool.solarwatch.model.*;
 import com.codecool.solarwatch.repository.CityRepository;
 import com.codecool.solarwatch.repository.SunSetRiseTimesRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -29,7 +30,7 @@ public class SunSetRiseService {
                     "http://api.openweathermap.org/geo/1.0/direct?q=%s&appid=%s", location, API_KEY
             );
 
-            Coordinates[] coordinatesArray = WebClient.create()
+            Coordinates[] coordinatesArray = webClient
                     .get()
                     .uri(coordinatesFromLocationUrl)
                     .retrieve()
@@ -79,6 +80,7 @@ public class SunSetRiseService {
         }
     }
 
+
     private SunSetRiseTimesData getSunSetRiseTimes(City city, LocalDate date) {
         SunSetRiseTimesData sunSetRiseTimesData;
         Optional<SunSetRiseTimesData> databaseReport = sunSetRiseTimesRepository.findByCityAndDate(city, date);
@@ -91,6 +93,7 @@ public class SunSetRiseService {
         return sunSetRiseTimesData;
     }
 
+    @Transactional
     public SunSetRiseTimesData getSunSetRise(String location, LocalDate date) {
         City city = getCity(location);
         SunSetRiseTimesData data = getSunSetRiseTimes(city, date);
