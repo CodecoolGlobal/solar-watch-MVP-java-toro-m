@@ -37,7 +37,7 @@ const LoginPage = () => {
 
             const token = await response.text();
             localStorage.setItem("token", token);
-            navigate('/tables');
+            navigate('/suninfo');
 
         } catch (error) {
             console.error("Login error:", error);
