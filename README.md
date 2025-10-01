@@ -50,7 +50,7 @@
 
 ![Product Name Screen Shot][product-screenshot]
 
-Solar Watch is a full-stack web application that allows users to check sunrise and sunset times for any city on any date. The application features a clean, responsive interface and provides accurate astronomical data through integration with external weather and geocoding APIs. Built with modern technologies, it showcases best practices in software development, including containerization with Docker, RESTful API design, and responsive frontend development.
+Solar Watch is a full-stack web application that allows users to check sunrise and sunset times for any city on any date. The application features a clean interface and provides accurate astronomical data through integration with external weather and geocoding APIs. Built with modern technologies, it showcases best practices in software development, including containerization with Docker, RESTful API design, and responsive frontend development.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -101,7 +101,26 @@ Before you begin, ensure you have the following installed on your system:
    ```
 
 2. **Set up environment variables**
-    <!-- To do: finsishe dockerisation, and write Read me installation steps-->
+   - Copy the `.env.template` file and rename it to `.env`
+   - Update the values in `.env` with your configuration:
+     ```
+     DB_USERNAME=postgres
+     DB_PASSWORD=your_secure_password
+     DB_URL=jdbc:postgresql://postgres:5432/solar_watch
+     SECRET_KEY_JWT=your_secure_jwt_secret
+     JWT_EXPIRATION_MS=86400000  # 24 hours in milliseconds
+     ```
+
+3. **Start the application**
+   - Using Docker Compose (recommended):
+     ```bash
+     docker-compose up --build
+     ```
+   - The application will be available at:
+      - Frontend: http://localhost:5173
+      - Backend API: http://localhost:8080
+      - PostgreSQL: localhost:5432
+
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
