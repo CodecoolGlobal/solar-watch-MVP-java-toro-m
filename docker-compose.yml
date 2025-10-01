@@ -1,0 +1,63 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: solar-postgres
+    environment:
+      POSTGRES_DB: solar_watch
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./solar-watch
+      dockerfile: Dockerfile
+    container_name: solar-backend
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - DB_URL=${DB_URL}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - SECRET_KEY_JWT=${SECRET_KEY_JWT}
+      - JWT_EXPIRATION_MS=${JWT_EXPIRATION_MS}
+      - SUNRISE_SUNSET_API_KEY=${SUNRISE_SUNSET_API_KEY}
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./solar-watch-frontend
+      dockerfile: Dockerfile
+    container_name: solar-frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./solar-watch-frontend:/app
+      - /app/node_modules
+    environment:
+      - VITE_API_URL=http://localhost:8080/api
+    working_dir: /app
+    stdin_open: true
+    tty: true
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+
+
+volumes:
+  postgres_data:
