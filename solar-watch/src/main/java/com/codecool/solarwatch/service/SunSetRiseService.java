@@ -4,6 +4,7 @@ import com.codecool.solarwatch.model.*;
 import com.codecool.solarwatch.repository.CityRepository;
 import com.codecool.solarwatch.repository.SunSetRiseTimesRepository;
 import jakarta.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -13,7 +14,8 @@ import java.util.Optional;
 
 @Service
 public class SunSetRiseService {
-    String API_KEY = System.getenv("API_KEY");
+    @Value("${solarwatch.api.sunrise-sunset.key}")
+    private String API_KEY;
     private final WebClient webClient;
     private final CityRepository cityRepository;
     private final SunSetRiseTimesRepository sunSetRiseTimesRepository;
