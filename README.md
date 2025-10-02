@@ -61,6 +61,7 @@ Solar Watch is a full-stack web application that allows users to check sunrise a
 #### Frontend
 * [![React][React.js]][React-url]
 * [![Vite][Vite.js]][Vite-url]
+* [![MUI][MUI.js]][MUI-url] 
 
 #### Backend
 * [![Spring Boot][Spring-Boot.js]][Spring-Boot-url]
